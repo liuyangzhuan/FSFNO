@@ -1,4 +1,4 @@
-# FSFNO Copyright (c) 2024, The Regents of the University of California,
+# STFNO Copyright (c) 2024, The Regents of the University of California,
 # through Lawrence Berkeley National Laboratory (subject to receipt of any
 # required approvals from the U.S.Dept. of Energy) and the University of
 # California, Berkeley.  All rights reserved.
@@ -14,4 +14,4 @@
 # derivative works, and perform publicly and display publicly, and to permit
 # other to do so.
 
-import fsfno
+import stfno

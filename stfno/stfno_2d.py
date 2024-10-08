@@ -1,4 +1,4 @@
-# FSFNO Copyright (c) 2024, The Regents of the University of California,
+# STFNO Copyright (c) 2024, The Regents of the University of California,
 # through Lawrence Berkeley National Laboratory (subject to receipt of any
 # required approvals from the U.S.Dept. of Energy) and the University of
 # California, Berkeley.  All rights reserved.
@@ -24,14 +24,14 @@
 #     Revision 1.1  2024/08/20 15:30:00  mustafar
 #     Original source.
 
-#     FSFNO code: Fusion Simultion Fourier Neural Operator code 
+#     STFNO code: Sparsified Time-dependent PDEs FNO code 
 #-----------------------------------------------------------------
 
 
 import torch
 import torch.nn as nn
-from fsfno.fourier_transform_2d_layer import SpectralConv2d
-from fsfno.channelwise_conv1d_mlp import MLP
+from stfno.fourier_transform_2d_layer import SpectralConv2d
+from stfno.channelwise_conv1d_mlp import MLP
 import numpy as np
 import torch.nn.functional as F
 

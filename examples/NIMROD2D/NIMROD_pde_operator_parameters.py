@@ -1,4 +1,4 @@
-# FSFNO Copyright (c) 2024, The Regents of the University of California,
+# STFNO Copyright (c) 2024, The Regents of the University of California,
 # through Lawrence Berkeley National Laboratory (subject to receipt of any
 # required approvals from the U.S.Dept. of Energy) and the University of
 # California, Berkeley.  All rights reserved.
@@ -25,7 +25,7 @@
 #     Revision 1.1  2024/08/20 15:30:00  mustafar
 #     Original source.
 
-#     FSFNO code: Fusion Simultion Fourier Neural Operator code 
+#     STFNO code: Sparsified Time-dependent PDEs FNO code 
 #-----------------------------------------------------------------
  
 def NIMROD_pde_operator_parameters_defination(if_2ndRunHyperDiffusivity_case, S):

@@ -21,6 +21,6 @@
 # export LD_LIBRARY_PATH=/global/common/software/nimrod/perlmutter/multispecies-gcc-11.2/nimdevel-jking-main-v1.0-dev.r287/lib/:$LD_LIBRARY_PATH ;
 module load python ; module load pytorch 
 
-export PYTHONPATH=/global/cfs/cdirs/mp127/nimrod/nimrod_hdf512_simulationIIhypdifusv_read_data_10_CodeCleanUp/20_S64_read_data__FNO2d_global_Layers4__Tin1__Tout1_20240930/fsfno/:$PYTHONPATH ;
+export PYTHONPATH=$PWD/../../stfno/:$PYTHONPATH
 
 python main.py

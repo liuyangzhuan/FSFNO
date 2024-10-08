@@ -1,4 +1,4 @@
-# FSFNO Copyright (c) 2024, The Regents of the University of California,
+# STFNO Copyright (c) 2024, The Regents of the University of California,
 # through Lawrence Berkeley National Laboratory (subject to receipt of any
 # required approvals from the U.S.Dept. of Energy) and the University of
 # California, Berkeley.  All rights reserved.
@@ -18,7 +18,7 @@ import matplotlib.pyplot as pl
 from scipy.interpolate import interp1d,splev,UnivariateSpline
 import os
 import h5py
-from fsfno.utilities3 import *
+from stfno.utilities3 import *
 from timeit import default_timer
 import matplotlib as mpl
 
