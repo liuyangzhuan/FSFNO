@@ -21,7 +21,10 @@
 # export LD_LIBRARY_PATH=/global/common/software/nimrod/perlmutter/multispecies-gcc-11.2/nimdevel-jking-main-v1.0-dev.r287/lib/:$LD_LIBRARY_PATH ;
 module load python ; module load pytorch 
 
-export PYTHONPATH=$PWD/../../stfno/:$PYTHONPATH
+# Just below for JIT torch.compile
+# module load pytorch/2.3.1
+
+export PYTHONPATH=$PWD/../../:$PYTHONPATH
 
 python main.py
 

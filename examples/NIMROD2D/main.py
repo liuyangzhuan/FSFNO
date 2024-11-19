@@ -48,11 +48,13 @@ number_of_layers = 4 #1
 IncludeSteadyState = False #True
 if_HyperDiffusivity_case= True
 if_2ndRunHyperDiffusivity_case = True
+if_postTraingAndTesting_ContourPlotsOfTestingData = False
 if_GTCLinearNonLinear_case = False 
 if_GTCLinearNonLinear_case_xy_cordinates_pmeshplot = False
 Option_NormalizingTrainTestData = 1 #2 or 1 or by default no normaliztion  True
 model_Nimrod_FNO2d_global = True # True
 if_model_parameters_load = False
+if_model_jit_torchCompile = True
 random_seed_i_file_no_in_SelectData = 0
 factor_ntrain_by_ntrainPlusntest = 0.50
 if if_HyperDiffusivity_case:
@@ -191,6 +193,8 @@ multiPDEs_overallsetup(
             fieldlist_parm_lst,fieldlist_parm_eq_range,fieldlist_parm_vector_lst,
             fieldlist_parm_eq_vector_train_global_lst,
             if_model_parameters_load,
+            if_model_jit_torchCompile,
+            if_postTraingAndTesting_ContourPlotsOfTestingData,
             if_GTCLinearNonLinear_case_xy_cordinates_pmeshplot,
             OneByPowerTransformationFactorOfData,
             log_param,

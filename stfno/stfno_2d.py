@@ -31,6 +31,7 @@
 import torch
 import torch.nn as nn
 from stfno.fourier_transform_2d_layer import SpectralConv2d
+from stfno.fourier_transform_2d_layer_jit_torchCompile import SpectralConv2d_jit_torchCompile
 from stfno.channelwise_conv1d_mlp import MLP
 import numpy as np
 import torch.nn.functional as F
@@ -41,7 +42,8 @@ class FNO2d_global(nn.Module):
                     total_vector_u_elements_i,number_of_layers,
                     input_parameter_order0, 
                     mWidth_input_parameters0, 
-                    nWidth_output_parameters0):
+                    nWidth_output_parameters0,
+                    if_model_jit_torchCompile):
         super(FNO2d_global, self).__init__()
         # if total_vector_u_elements_i == 7:
         self.input_parameter_order = input_parameter_order0
@@ -62,8 +64,12 @@ class FNO2d_global(nn.Module):
         self.n_layers = number_of_layers
         self.p_linears = nn.ModuleList([nn.Linear((self.T_in)+2, self.width) for i in range(self.total_vector_a_elements_i)])
         self.conv_linears = nn.ModuleList()
-        for j in range(self.n_layers):
-                self.conv_linears.append(  nn.ModuleList([SpectralConv2d(self.width * self.mWidth_input_parameters[i], self.width * self.nWidth_output_parameters[i], self.modes1, self.modes2) for i in range(len(self.mWidth_input_parameters))])  )
+        if if_model_jit_torchCompile:
+            for j in range(self.n_layers):
+                    self.conv_linears.append(  nn.ModuleList([SpectralConv2d_jit_torchCompile(self.width * self.mWidth_input_parameters[i], self.width * self.nWidth_output_parameters[i], self.modes1, self.modes2) for i in range(len(self.mWidth_input_parameters))])  )
+        else:
+            for j in range(self.n_layers):
+                    self.conv_linears.append(  nn.ModuleList([SpectralConv2d(self.width * self.mWidth_input_parameters[i], self.width * self.nWidth_output_parameters[i], self.modes1, self.modes2) for i in range(len(self.mWidth_input_parameters))])  )
         self.mlp_linears = nn.ModuleList()
         for j in range(self.n_layers):
                 self.mlp_linears.append( nn.ModuleList([MLP(self.width * self.nWidth_output_parameters[i], self.width * self.nWidth_output_parameters[i], self.width * self.nWidth_output_parameters[i]) for i in range(len(self.mWidth_input_parameters))]) )
@@ -94,9 +100,8 @@ class FNO2d_global(nn.Module):
             x2 =[]
             x1 =[]
             for i in range(0,len(self.mWidth_input_parameters)):  
-                x2_tmp = x[ :, self.width* self.input_parameter_order[i][0] :self.width* (self.input_parameter_order[i][0] + 1),:,: ]
-                for j in range(len(self.input_parameter_order[i])-1):
-                    x2_tmp = torch.cat( (x2_tmp, x[ :, self.width* self.input_parameter_order[i][j+1] :self.width* (self.input_parameter_order[i][j+1] + 1),:,:]), dim=-3) 
+                x2_tmp = [x[ :, self.width* self.input_parameter_order[i][j] :self.width* (self.input_parameter_order[i][j] + 1),:,:] for j in range(len(self.input_parameter_order[i]))]
+                x2_tmp = torch.cat(x2_tmp,dim=-3)
                 x3.append(x2_tmp)
                 x1.append( self.norm_linears_1[i_n_layers][i](x3[i]) )
                 x1[i]=self.conv_linears[i_n_layers][i](x1[i])
@@ -128,8 +133,8 @@ class FNO2d_global(nn.Module):
         return x
     def get_grid(self, shape, device):
         batchsize, size_x, size_y = shape[0], shape[1], shape[2]
-        gridx = torch.tensor(np.linspace(0, 1, size_x), dtype=torch.float)
+        gridx = torch.linspace(0, 1, steps=size_x, dtype=torch.float,device=device)
         gridx = gridx.reshape(1, size_x, 1, 1).repeat([batchsize, 1, size_y, 1])
-        gridy = torch.tensor(np.linspace(0, 1, size_y), dtype=torch.float)
+        gridy = torch.linspace(0, 1, steps=size_y, dtype=torch.float,device=device)
         gridy = gridy.reshape(1, 1, size_y, 1).repeat([batchsize, size_x, 1, 1])
         return torch.cat((gridx, gridy), dim=-1).to(device)

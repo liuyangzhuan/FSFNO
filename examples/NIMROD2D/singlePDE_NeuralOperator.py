@@ -20,6 +20,7 @@ from timeit import default_timer
 from contour_plotting import contourplotting
 from relativeError_eachTestDataSample_file4 import relativeErrorEachTestDataSample_file4
 from inferenceTime_testData_file5 import inferenceTimeTestData_file5
+from jittorchcompile_inferenceTime_testData_file6 import  jittorchcompile_inferenceTimeTestData_file6
 
 def singlePDENeuralOperator(data_read_global,
         data_read_global_mean,data_read_global_std,
@@ -34,6 +35,7 @@ def singlePDENeuralOperator(data_read_global,
         i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j,
         sum_vector_a_elements_i_iter, sum_vector_u_elements_i_iter,
         epochs,
+        strn_epochs_dump_path_file6,
         strn_epochs_dump_path_file5,
         T_out_sub_time_consecutiveIterator_factor, step,
         batch_size,
@@ -43,6 +45,8 @@ def singlePDENeuralOperator(data_read_global,
         strn_epochs_dump_path_file2,
         strn_epochs_dump_path_file1,
         if_model_parameters_load,
+        if_model_jit_torchCompile,
+        if_postTraingAndTesting_ContourPlotsOfTestingData,
         if_GTCLinearNonLinear_case_xy_cordinates_pmeshplot,
         OneByPowerTransformationFactorOfData,
         log_param,
@@ -201,29 +205,30 @@ def singlePDENeuralOperator(data_read_global,
         model,
         test_loader,
         )
-    print('Generating the contour plots')
-    contourplotting(data_read_global,
-        data_read_global_mean,data_read_global_std,
-        data_read_global_eachTimeStep_mean,
-        data_read_global_eachTimeStep_std,
-        ntrain,
-        r_theta_phi, 
-        T_out,
-        startofpatternlist_i_file_no_in_SelectData,
-        i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j,
-        sum_vector_a_elements_i_iter, sum_vector_u_elements_i_iter,
-        epochs,
-        T_out_sub_time_consecutiveIterator_factor, step,
-        batch_size,
-        i_file_no_in_SelectData, 
-        if_GTCLinearNonLinear_case_xy_cordinates_pmeshplot,
-        OneByPowerTransformationFactorOfData,
-        log_param,
-        nlvls,
-        epsilon_inPlottingErrorNormalization,
-        model,
-        test_loader
-        )
+    if if_postTraingAndTesting_ContourPlotsOfTestingData:
+        print('Generating the contour plots')
+        contourplotting(data_read_global,
+            data_read_global_mean,data_read_global_std,
+            data_read_global_eachTimeStep_mean,
+            data_read_global_eachTimeStep_std,
+            ntrain,
+            r_theta_phi, 
+            T_out,
+            startofpatternlist_i_file_no_in_SelectData,
+            i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j,
+            sum_vector_a_elements_i_iter, sum_vector_u_elements_i_iter,
+            epochs,
+            T_out_sub_time_consecutiveIterator_factor, step,
+            batch_size,
+            i_file_no_in_SelectData, 
+            if_GTCLinearNonLinear_case_xy_cordinates_pmeshplot,
+            OneByPowerTransformationFactorOfData,
+            log_param,
+            nlvls,
+            epsilon_inPlottingErrorNormalization,
+            model,
+            test_loader
+            )
     print('Measuring the inference time of test data and writing at ',strn_epochs_dump_path_file5)
     inferenceTimeTestData_file5(
     S_r,S_theta , T_in,T_out, T_in_steadystate,
@@ -235,3 +240,19 @@ def singlePDENeuralOperator(data_read_global,
     batch_size,
     model
     )
+
+    if if_model_jit_torchCompile:
+        print('Measuring JIT torchDOTcompile test time')
+        jittorchcompile_inferenceTimeTestData_file6(            
+            ntest,
+            S,
+            T_out, 
+            sum_vector_u_elements_i_iter,
+            epochs,
+            strn_epochs_dump_path_file6,
+            T_out_sub_time_consecutiveIterator_factor, step,
+            if_model_jit_torchCompile,
+            model,
+            test_loader,            
+            count_params_model
+            )

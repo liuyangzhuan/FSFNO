@@ -1,12 +1,13 @@
 import torch
 import torch.nn as nn
 from stfno.fourier_transform_2d_layer import SpectralConv2d
+from stfno.fourier_transform_2d_layer_jit_torchCompile import SpectralConv2d_jit_torchCompile
 from stfno.channelwise_conv1d_mlp import MLP
 import numpy as np
 import torch.nn.functional as F
 
 class FNO2d_glob_orig(nn.Module):
-    def __init__(self, modes1, modes2, width,T_in,sum_vector_a_elements_i_iter,T_out,sum_vector_u_elements_i_iter,number_of_layers):
+    def __init__(self, modes1, modes2, width,T_in,sum_vector_a_elements_i_iter,T_out,sum_vector_u_elements_i_iter,number_of_layers,if_model_jit_torchCompile):
         super(FNO2d_glob_orig, self).__init__()
         self.modes1 = modes1 
         self.modes2 = modes2 
@@ -15,10 +16,16 @@ class FNO2d_glob_orig(nn.Module):
         self.T_input   = T_in * sum_vector_a_elements_i_iter
         self.parameters_out   = T_out * sum_vector_u_elements_i_iter
         self.p = nn.Linear( (self.T_input)+2, self.width) # input channel is 12: the solution of the previous 10 timesteps + 2 locations (u(t-10, x, y), ..., u(t-1, x, y),  x, y)
-        self.conv0 = SpectralConv2d(self.width, self.width, self.modes1, self.modes2)
-        self.conv1 = SpectralConv2d(self.width, self.width, self.modes1, self.modes2)
-        self.conv2 = SpectralConv2d(self.width, self.width, self.modes1, self.modes2)
-        self.conv3 = SpectralConv2d(self.width, self.width, self.modes1, self.modes2)
+        if if_model_jit_torchCompile:
+            self.conv0 = SpectralConv2d_jit_torchCompile(self.width, self.width, self.modes1, self.modes2)
+            self.conv1 = SpectralConv2d_jit_torchCompile(self.width, self.width, self.modes1, self.modes2)
+            self.conv2 = SpectralConv2d_jit_torchCompile(self.width, self.width, self.modes1, self.modes2)
+            self.conv3 = SpectralConv2d_jit_torchCompile(self.width, self.width, self.modes1, self.modes2)
+        else:
+            self.conv0 = SpectralConv2d(self.width, self.width, self.modes1, self.modes2)
+            self.conv1 = SpectralConv2d(self.width, self.width, self.modes1, self.modes2)
+            self.conv2 = SpectralConv2d(self.width, self.width, self.modes1, self.modes2)
+            self.conv3 = SpectralConv2d(self.width, self.width, self.modes1, self.modes2)
         self.mlp0 = MLP(self.width, self.width, self.width)
         self.mlp1 = MLP(self.width, self.width, self.width)
         self.mlp2 = MLP(self.width, self.width, self.width)

@@ -18,6 +18,7 @@ import os
 # from stfno.stfno_2d_nimrod import FNO2d_global
 from stfno.utilities3 import *
 from stfno.stfno_2d import FNO2d_global
+from stfno.fno_2d_baseline import FNO2d_glob_orig
 
 def initializationTrainTestParametersFile( 
         sub_fieldlist_parm_eq_vector_train_global_lst_i_ii, j_fieldlist_parm_eq_vector_train_global_lst_i,
@@ -27,7 +28,8 @@ def initializationTrainTestParametersFile(
         S,S_r,S_theta , T_in,T_out, T_in_steadystate,
         IncludeSteadyState, 
         n_beg, startofpatternlist_i_file_no_in_SelectData,
-        model_Nimrod_FNO2d_global  ,
+        model_Nimrod_FNO2d_global,
+        if_model_jit_torchCompile, 
         i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j ,
         ii_sub_fieldlist_parm_eq_vector_train_global_lst_i,
         modes, width,
@@ -36,6 +38,7 @@ def initializationTrainTestParametersFile(
         mWidth_input_parameters, 
         nWidth_output_parameters,
         sum_vector_a_elements_i_iter, sum_vector_u_elements_i_iter,
+        strn_epochs_dump_path_file6,
         strn_epochs_dump_path_file5,
         strn_epochs_dump_path_file4,
         strn_epochs_dump_path_file3,
@@ -209,6 +212,8 @@ def initializationTrainTestParametersFile(
     train_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(train_a, train_u), batch_size=batch_size, shuffle=False )
     test_loader  = torch.utils.data.DataLoader(torch.utils.data.TensorDataset( test_a,  test_u), batch_size=batch_size, shuffle=False)
     print('Done initializing the training and testing data')
+    if if_model_jit_torchCompile:
+        torch._dynamo.reset()
 
     if IncludeSteadyState:
         if model_Nimrod_FNO2d_global:
@@ -222,9 +227,11 @@ def initializationTrainTestParametersFile(
                                                 sum_vector_u_elements_i_iter,number_of_layers,
                                                 input_parameter_order, 
                                                 mWidth_input_parameters, 
-                                                nWidth_output_parameters).cuda()
+                                                nWidth_output_parameters,
+                                                if_model_jit_torchCompile).cuda()
         else:
-            model = FNO2d_glob_orig         (modes, modes, width,(T_in)  ,sum_vector_a_elements_i_iter,T_out,sum_vector_u_elements_i_iter,number_of_layers).cuda()
+            model = FNO2d_glob_orig         (modes, modes, width,(T_in)  ,sum_vector_a_elements_i_iter,T_out,sum_vector_u_elements_i_iter,number_of_layers,
+                                             if_model_jit_torchCompile).cuda()
     count_params_model=count_params(model)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=iterations)
@@ -318,6 +325,24 @@ def initializationTrainTestParametersFile(
             '\n' ) 
     file5.write(str_file5)
     file5.close()
+    strn_epochs_dump_path_file6 = 'data/'+'epochs_diagsTime_jit_torchcompile'+str(i_fieldlist_parm_eq_vector_train_global_lst)+'__'
+    for k_fieldlist_parm_eq_vector_train_global_lst_i_j, fieldlist_parm_eq_vector_train_global_lst_i_j_k in enumerate(fieldlist_parm_eq_vector_train_global_lst_i_j[0]):
+        strn_epochs_dump_path_file6 = strn_epochs_dump_path_file6+fieldlist_parm_eq_vector_train_global_lst_i_j_k[0]+'_'+str(fieldlist_parm_eq_vector_train_global_lst_i_j_k[1]) +'_' + str(fieldlist_parm_eq_vector_train_global_lst_i_j_k[2])
+    strn_epochs_dump_path_file6 =strn_epochs_dump_path_file6 + "_"
+    for k_fieldlist_parm_eq_vector_train_global_lst_i_j, fieldlist_parm_eq_vector_train_global_lst_i_j_k in enumerate(fieldlist_parm_eq_vector_train_global_lst_i_j[1]):
+        strn_epochs_dump_path_file6 = strn_epochs_dump_path_file6+fieldlist_parm_eq_vector_train_global_lst_i_j_k[0]+'_'+str(fieldlist_parm_eq_vector_train_global_lst_i_j_k[1]) +'_' + str(fieldlist_parm_eq_vector_train_global_lst_i_j_k[2])
+    strn_epochs_dump_path_file6 =strn_epochs_dump_path_file6 + ".txt"
+    file6 = open(strn_epochs_dump_path_file6, "w") 
+    str_file6= ( 'ep' + ', t2 - t1' +  
+            ', train_l2_step / ntrain / (T_out / step)'+
+            ', train_l2_full / ntrain' +
+            ', test_l2_step / ntest / (T_out / step)' +
+            ', test_l2_full / ntest' + 
+            ', count_params(model)='+str(count_params(model))+
+            ', t12mid - t1'+
+            ', t2 - t12mid'+'\n' ) 
+    file6.write(str_file6)
+    file6.close()
     print('Created the output dump files at ./data/')
     return ( 
         sub_fieldlist_parm_eq_vector_train_global_lst_i_ii, j_fieldlist_parm_eq_vector_train_global_lst_i,
@@ -327,12 +352,14 @@ def initializationTrainTestParametersFile(
         S,S_r,S_theta , T_in,T_out, T_in_steadystate,
         IncludeSteadyState, 
         n_beg, startofpatternlist_i_file_no_in_SelectData,
-        model_Nimrod_FNO2d_global  ,
+        model_Nimrod_FNO2d_global,
+        if_model_jit_torchCompile, 
         i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j ,
         ii_sub_fieldlist_parm_eq_vector_train_global_lst_i,
         modes, width,
         batch_size,number_of_layers, learning_rate,iterations,
         sum_vector_a_elements_i_iter, sum_vector_u_elements_i_iter,
+        strn_epochs_dump_path_file6,
         strn_epochs_dump_path_file5,
         strn_epochs_dump_path_file4,
         strn_epochs_dump_path_file3,
