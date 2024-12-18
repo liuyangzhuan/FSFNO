@@ -21,15 +21,18 @@ import h5py
 # import sys
 
 def readfiledata_h5py_ifilenoinSelectData(
-        if_HyperDiffusivity_case, if_2ndRunHyperDiffusivity_case,S,
+        if_HyperDiffusivity_case, if_2ndRunHyperDiffusivity_case,S_r,
         fieldlist_parm_lst,fieldlist_parm_eq_range,fieldlist_parm_vector_lst,
         path_data_read,
         Option_NormalizingTrainTestData,i_file_no_in,
-        OneByPowerTransformationFactorOfData
-        ):
-    data_read_global = torch.zeros(len(i_file_no_in),len(fieldlist_parm_lst),fieldlist_parm_eq_range,max(fieldlist_parm_vector_lst), S,S)
-    
-
+        OneByPowerTransformationFactorOfData,
+        S_theta,S_n_phi, if_3D
+        ):    
+    if if_3D:
+        data_read_global_hdf5file = torch.zeros(len(i_file_no_in),len(fieldlist_parm_lst),fieldlist_parm_eq_range,max(fieldlist_parm_vector_lst), S_r,S_theta,S_n_phi)
+        data_read_global          = torch.zeros(len(i_file_no_in),len(fieldlist_parm_lst),fieldlist_parm_eq_range,max(fieldlist_parm_vector_lst), S_r,S_theta,S_n_phi)
+    else: 
+        data_read_global = torch.zeros(len(i_file_no_in),len(fieldlist_parm_lst),fieldlist_parm_eq_range,max(fieldlist_parm_vector_lst), S_r,S_theta)
     for i_fieldlist_parm_lst, fieldlist_parm_lst_i in enumerate(fieldlist_parm_lst):
             if fieldlist_parm_lst_i=='e':
                 fieldlist_parm_lst_i_read = 'te'
@@ -46,7 +49,12 @@ def readfiledata_h5py_ifilenoinSelectData(
                     data_read = h5file[fieldlist_parm_lst_i_read]
                     data_read = data_read[()]
                     h5file.close()
-                    data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:] = torch.from_numpy(data_read).to(data_read_global)
+                    if if_3D:
+                        data_read_global_hdf5file[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:,:] = torch.from_numpy(data_read).to(data_read_global)
+                    else: 
+                        data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:] = torch.from_numpy(data_read).to(data_read_global)
+    if if_3D:
+        data_read_global = data_read_global_hdf5file[:,:,:,:,:S_r,:S_theta,:S_n_phi]
     if torch.any(torch.isnan(data_read_global[:,:,:,:,:,:])): #data_dump[:,:,:,:])):
             exit(1)
     if if_HyperDiffusivity_case:
@@ -112,44 +120,44 @@ def readfiledata_h5py_ifilenoinSelectData(
     i_file_no_in = i_file_no_in_SelectData
     data_read_global_eachTimeStep_mean = torch.zeros(len(i_file_no_in),len(fieldlist_parm_lst),fieldlist_parm_eq_range,max(fieldlist_parm_vector_lst))
     data_read_global_eachTimeStep_std  = torch.zeros(len(i_file_no_in),len(fieldlist_parm_lst),fieldlist_parm_eq_range,max(fieldlist_parm_vector_lst))
-    for i_fieldlist_parm_lst, fieldlist_parm_lst_i in enumerate(fieldlist_parm_lst):
-            for i_fieldlist_parm_eq_selected, fieldlist_parm_eq_selected in enumerate(range(fieldlist_parm_eq_range)):
-                for i_fieldlist_parm_vector_i, fieldlist_parm_vector_i in  enumerate(range(fieldlist_parm_vector_lst[i_fieldlist_parm_lst])):
-                    data_read_global_mean[i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = torch.pow( torch.mean(data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:] )  ,  1.0/1.0)
-                    data_read_global_std [i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = torch.pow(  torch.std(data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:] ) ,  1.0/1.0)
-                    for i_fieldlist_parm_ifilenoin_i, fieldlist_parm_ifilenoin_i in  enumerate(range(len(i_file_no_in))): 
-                        if Option_NormalizingTrainTestData == 2:
-                            data_read_global_eachTimeStep_mean[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = torch.pow( torch.mean(data_read_global[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:] ) , 1.0) 
-                            data_read_global_eachTimeStep_std [i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = torch.pow(  torch.std(data_read_global[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:] ) , 1.0) 
-                        elif Option_NormalizingTrainTestData == 1:
-                            data_read_global_eachTimeStep_mean[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = torch.pow( torch.mean(data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:] )  , 1.0) 
-                            data_read_global_eachTimeStep_std [i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = torch.pow(  torch.std(data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:] )  , 1.0) 
-                        else:
-                            data_read_global_eachTimeStep_mean[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = 0.0
-                            data_read_global_eachTimeStep_std [i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = 1.0
-                            data_read_global_mean[i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = 0.0 #torch.mean(data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:] ) 
-                            data_read_global_std [i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = 1.0 # torch.std(data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:] )
-    for i_fieldlist_parm_lst, fieldlist_parm_lst_i in enumerate(fieldlist_parm_lst):
-            for i_fieldlist_parm_eq_selected, fieldlist_parm_eq_selected in enumerate(range(fieldlist_parm_eq_range)):
-                for i_fieldlist_parm_vector_i, fieldlist_parm_vector_i in  enumerate(range(fieldlist_parm_vector_lst[i_fieldlist_parm_lst])):
-                    for i_fieldlist_parm_ifilenoin_i, fieldlist_parm_ifilenoin_i in  enumerate(range(len(i_file_no_in))): 
     
-                        if data_read_global_eachTimeStep_std[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] == 0:
-                            print('readfiledata_h5py_i_file_no_in_SelectData.py exit(1)')
-                            exit(1) 
-                        else:
-                            data_read_global[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:]  = (
-                                    torch.pow(((data_read_global[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:]
-                                    -data_read_global_eachTimeStep_mean[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i])
-                                    /data_read_global_eachTimeStep_std[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] ), 1.0/1.0 ) )
-    sign_ofPowerTransformationOfData = torch.sign(data_read_global[:,:,:,:,:])
-    data_read_global[:,:,:,:,:] = torch.pow( torch.abs(data_read_global[:,:,:,:,:]).to(torch.float64),1.0/ OneByPowerTransformationFactorOfData) * sign_ofPowerTransformationOfData
-    if torch.any(torch.isnan(data_read_global[:,:,:,:,:])): #data_dump[:,:,:,:])):                    
+    for i_fieldlist_parm_lst, fieldlist_parm_lst_i in enumerate(fieldlist_parm_lst):
+                for i_fieldlist_parm_eq_selected, fieldlist_parm_eq_selected in enumerate(range(fieldlist_parm_eq_range)):
+                    for i_fieldlist_parm_vector_i, fieldlist_parm_vector_i in  enumerate(range(fieldlist_parm_vector_lst[i_fieldlist_parm_lst])):
+                        data_read_global_mean[i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = torch.pow( torch.mean(data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,...] )  ,  1.0/1.0)
+                        data_read_global_std [i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = torch.pow(  torch.std(data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,...] ) ,  1.0/1.0)
+                        
+                        for i_fieldlist_parm_ifilenoin_i, fieldlist_parm_ifilenoin_i in  enumerate(range(len(i_file_no_in))): 
+                            if Option_NormalizingTrainTestData == 2:
+                                data_read_global_eachTimeStep_mean[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = torch.pow( torch.mean(data_read_global[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,...] ) , 1.0) 
+                                data_read_global_eachTimeStep_std [i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = torch.pow(  torch.std(data_read_global[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,...] ) , 1.0) 
+                            elif Option_NormalizingTrainTestData == 1:                                
+                                data_read_global_eachTimeStep_mean[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = torch.pow( torch.mean(data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,...] )  , 1.0) 
+                                data_read_global_eachTimeStep_std [i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = torch.pow(  torch.std(data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,...] )  , 1.0) 
+                            else:
+                                data_read_global_eachTimeStep_mean[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = 0.0
+                                data_read_global_eachTimeStep_std [i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = 1.0
+                                data_read_global_mean[i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = 0.0 #torch.mean(data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:] ) 
+                                data_read_global_std [i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] = 1.0 # torch.std(data_read_global[:,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,:,:] )
+    for i_fieldlist_parm_lst, fieldlist_parm_lst_i in enumerate(fieldlist_parm_lst):
+                for i_fieldlist_parm_eq_selected, fieldlist_parm_eq_selected in enumerate(range(fieldlist_parm_eq_range)):
+                    for i_fieldlist_parm_vector_i, fieldlist_parm_vector_i in  enumerate(range(fieldlist_parm_vector_lst[i_fieldlist_parm_lst])):
+                        for i_fieldlist_parm_ifilenoin_i, fieldlist_parm_ifilenoin_i in  enumerate(range(len(i_file_no_in))): 
+                            if data_read_global_eachTimeStep_std[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] == 0:
+                                print('readfiledata_h5py_i_file_no_in_SelectData.py exit(1)')
+                                exit(1) 
+                            else:
+                                data_read_global[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,...]  = (
+                                            torch.pow(((data_read_global[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i,...]
+                                            -data_read_global_eachTimeStep_mean[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i])
+                                            /data_read_global_eachTimeStep_std[i_fieldlist_parm_ifilenoin_i,i_fieldlist_parm_lst,i_fieldlist_parm_eq_selected,i_fieldlist_parm_vector_i] ), 1.0/1.0 ) )
+    sign_ofPowerTransformationOfData = torch.sign(data_read_global[...])
+    data_read_global[...] = torch.pow( torch.abs(data_read_global[...]).to(torch.float64),1.0/ OneByPowerTransformationFactorOfData) * sign_ofPowerTransformationOfData
+    if torch.any(torch.isnan(data_read_global[...])): #data_dump[:,:,:,:])):                    
         print(" data_read_global:", data_read_global)
-        nan_mask = torch.isnan(data_read_global[:,:,:,:,:])
+        nan_mask = torch.isnan(data_read_global[...])
         print(" NaN mask:", nan_mask)
         nan_indices = torch.nonzero(nan_mask, as_tuple=True)
         print(" Indices of NaN values:", nan_indices)
     print(' Data Normalized')
-
     return (data_read_global,data_read_global_mean,data_read_global_std,data_read_global_eachTimeStep_mean,data_read_global_eachTimeStep_std,i_file_no_in_SelectData,path_data_read)

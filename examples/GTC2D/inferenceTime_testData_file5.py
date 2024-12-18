@@ -20,7 +20,7 @@ from timeit import default_timer
 
 def inferenceTimeTestData_file5(
     S_r,S_theta , T_in,T_out, T_in_steadystate,
-    IncludeSteadyState, 
+    if_IncludeSteadyState, 
     sum_vector_a_elements_i_iter, sum_vector_u_elements_i_iter,
     epochs,
     strn_epochs_dump_path_file5,
@@ -29,7 +29,7 @@ def inferenceTimeTestData_file5(
     model
     ):
 
-    if IncludeSteadyState:
+    if if_IncludeSteadyState:
         test_a_ntest1size  = torch.zeros(1 ,S_r,S_theta,(T_in+T_in_steadystate) *( sum_vector_a_elements_i_iter ) )
         test_u_ntest1size  = torch.zeros(1 ,S_r,S_theta,T_out   *( sum_vector_u_elements_i_iter ) )
     else:

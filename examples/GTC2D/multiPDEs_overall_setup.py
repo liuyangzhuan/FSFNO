@@ -24,9 +24,9 @@ def multiPDEs_overallsetup(
             data_read_global_eachTimeStep_std_logRMS,
             ntrain,ntest,
             S,S_r,S_theta , T_in,T_out, T_in_steadystate,
-            IncludeSteadyState, 
+            if_IncludeSteadyState, 
             n_beg, startofpatternlist_i_file_no_in_SelectData,
-            model_Nimrod_FNO2d_global  ,
+            if_model_Nimrod_STFNO_global  ,
             epochs,
             epochs_ofWeigthModification,
             epochs_ofWeigthModificationFactor,
@@ -61,7 +61,7 @@ def multiPDEs_overallsetup(
     train_u_global_2_logRMS_RegressionModel = torch.zeros(ntrain,len(fieldlist_parm_lst),fieldlist_parm_eq_range,max(fieldlist_parm_vector_lst),T_out)
     test_a_global_2_logRMS_RegressionModel = torch.zeros(ntest,len(fieldlist_parm_lst),fieldlist_parm_eq_range,max(fieldlist_parm_vector_lst),T_in)
     test_u_global_2_logRMS_RegressionModel = torch.zeros(ntest,len(fieldlist_parm_lst),fieldlist_parm_eq_range,max(fieldlist_parm_vector_lst),T_out)
-    if IncludeSteadyState:
+    if if_IncludeSteadyState:
         train_a_global_steadystate = torch.zeros(ntrain,len(fieldlist_parm_lst),fieldlist_parm_eq_range,max(fieldlist_parm_vector_lst),S_r ,S_theta,T_in_steadystate)
         test_a_global_steadystate  = torch.zeros(ntest ,len(fieldlist_parm_lst),fieldlist_parm_eq_range,max(fieldlist_parm_vector_lst),S_r ,S_theta,T_in_steadystate)
     for i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i in enumerate(fieldlist_parm_eq_vector_train_global_lst): 
@@ -83,15 +83,15 @@ def multiPDEs_overallsetup(
         test_a_global_glob_all_2_logRMS_RegressionModel  = torch.zeros(ntest, sum_vector_test_elements_i_all,T_in)
         test_u_global_glob_all_2_logRMS_RegressionModel  = torch.zeros(ntest, sum_vector_test_elements_i_all,T_out)
         intermediate_parameters_dict = {'pressureiperp':[],'pressureipara':[],'flowi':[],'apara_2d':[],'phi_2d':[],'densityi':[],'x':[],'y':[]}
-        intermediate_parameter_update = False
+        if_intermediate_parameter_update = False
         intermediate_parameters_dict_list = []
-        if intermediate_parameter_update: 
+        if if_intermediate_parameter_update: 
             if  fieldlist_parm_eq_vector_train_global_lst_i_j_k[0] in intermediate_parameters_dict:
                 list0 = []
-        if intermediate_parameter_update:
+        if if_intermediate_parameter_update:
             if  not intermediate_parameters_dict[fieldlist_parm_eq_vector_train_global_lst_i_j_k[0] ]:
                 list0 = []
-        if intermediate_parameter_update:
+        if if_intermediate_parameter_update:
             intermediate_parameters_dict[fieldlist_parm_eq_vector_train_global_lst_i_j_k[0] ].append( intermediate_parameters_dict )
             list0 = []
         for ii_sub_fieldlist_parm_eq_vector_train_global_lst_i, sub_fieldlist_parm_eq_vector_train_global_lst_i_ii in enumerate(fieldlist_parm_eq_vector_train_global_lst_i):
@@ -119,9 +119,9 @@ def multiPDEs_overallsetup(
                     epochs_ofWeigthModification,
                     epochs_ofWeigthModificationFactor,
                     T_out_sub_time_consecutiveIterator_factor,
-                    IncludeSteadyState, 
+                    if_IncludeSteadyState, 
                     n_beg, startofpatternlist_i_file_no_in_SelectData,
-                    model_Nimrod_FNO2d_global  ,
+                    if_model_Nimrod_STFNO_global  ,
                     i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j ,
                     ii_sub_fieldlist_parm_eq_vector_train_global_lst_i,
                     modes, width,
@@ -157,9 +157,9 @@ def multiPDEs_overallsetup(
                         epochs_ofWeigthModification,
                         epochs_ofWeigthModificationFactor,
                         T_out_sub_time_consecutiveIterator_factor,
-                        IncludeSteadyState, 
+                        if_IncludeSteadyState, 
                         n_beg, startofpatternlist_i_file_no_in_SelectData,
-                        model_Nimrod_FNO2d_global  ,
+                        if_model_Nimrod_STFNO_global  ,
                         i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j ,
                         ii_sub_fieldlist_parm_eq_vector_train_global_lst_i,
                         modes, width,
@@ -193,9 +193,9 @@ def multiPDEs_overallsetup(
                         data_read_global_eachTimeStep_std,
                         ntrain,ntest,
                         S_r,S_theta , T_in,T_out, T_in_steadystate,
-                        IncludeSteadyState, 
+                        if_IncludeSteadyState, 
                         startofpatternlist_i_file_no_in_SelectData,
-                        model_Nimrod_FNO2d_global,
+                        if_model_Nimrod_STFNO_global,
                         i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j,
                         sum_vector_a_elements_i_iter, sum_vector_u_elements_i_iter,
                         epochs,
@@ -214,7 +214,7 @@ def multiPDEs_overallsetup(
                         train_loader,test_loader,
                         optimizer,scheduler,
                         count_params_model,
-                        intermediate_parameter_update,
+                        if_intermediate_parameter_update,
                         model_save_path,
                         model_2_logRMS_RegressionModel,
                         model_2_logRMS_RegressionModel_save_path,

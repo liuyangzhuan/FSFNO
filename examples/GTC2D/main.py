@@ -34,10 +34,10 @@ random_seed_i_file_no_in_SelectData = 0
 T_in_steadystate=1
 T_steadystate=1
 number_of_layers = 4
-IncludeSteadyState = False #True #True
+if_IncludeSteadyState = False #True #True
 if_GTCLinearNonLinear_case_xy_cordinates_pmeshplot = False # True #True
 Option_NormalizingTrainTestData = 3 #2 or 1 or by default no normaliztion  True
-model_Nimrod_FNO2d_global = True #False
+if_model_Nimrod_STFNO_global = True #False
 if_model_parameters_load = False
 if_load_best_model_parameters_test_l2_step__if_model_parameters_load_True = False
 random_seed_i_file_no_in_SelectData = 0
@@ -265,9 +265,9 @@ multiPDEs_overallsetup(
             data_read_global_eachTimeStep_std_logRMS,
             ntrain,ntest,
             S,S_r,S_theta , T_in,T_out, T_in_steadystate,
-            IncludeSteadyState, 
+            if_IncludeSteadyState, 
             n_beg, startofpatternlist_i_file_no_in_SelectData,
-            model_Nimrod_FNO2d_global  ,
+            if_model_Nimrod_STFNO_global  ,
             epochs,
             epochs_ofWeigthModification,
             epochs_ofWeigthModificationFactor,

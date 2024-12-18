@@ -34,9 +34,9 @@ def initializationTrainTestParametersFile(
         epochs_ofWeigthModification,
         epochs_ofWeigthModificationFactor,                        
         T_out_sub_time_consecutiveIterator_factor,
-        IncludeSteadyState, 
+        if_IncludeSteadyState, 
         n_beg, startofpatternlist_i_file_no_in_SelectData,
-        model_Nimrod_FNO2d_global  ,
+        if_model_Nimrod_STFNO_global  ,
         i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j ,
         ii_sub_fieldlist_parm_eq_vector_train_global_lst_i,
         modes, width,
@@ -70,7 +70,7 @@ def initializationTrainTestParametersFile(
     test_a_global  = torch.zeros(ntest, sum_vector_a_elements_i_iter,S_r ,S_theta,T_in)
     train_a_global_2_logRMS_RegressionModel = torch.zeros(ntrain,sum_vector_a_elements_i_iter,T_in)
     test_a_global_2_logRMS_RegressionModel  = torch.zeros(ntest, sum_vector_a_elements_i_iter,T_in)
-    if IncludeSteadyState:
+    if if_IncludeSteadyState:
         train_a_global_steadystate = torch.zeros(ntrain,sum_vector_a_elements_i_iter,S_r ,S_theta,T_in_steadystate )
         test_a_global_steadystate  = torch.zeros(ntest, sum_vector_a_elements_i_iter,S_r ,S_theta,T_in_steadystate)
     sum_vector_u_elements_i_iter = len(sub_fieldlist_parm_eq_vector_train_global_lst_i_ii[j_fieldlist_parm_eq_vector_train_global_lst_i][1])
@@ -106,7 +106,7 @@ def initializationTrainTestParametersFile(
                             exit(1)
                         train_a_global[i_ntrain,item_of_sum_vector_train_a_elements_i,:,:,(intermediate_i_file_no-(n_beg))] = data_read_global[ startofpatternlist_i_file_no_in_SelectData[(i_ntrain)]+intermediate_i_file_no,fieldlist_parm_eq_vector_train_global_lst_i_j_0,fieldlist_parm_eq_vector_train_global_lst_i_j_k[1],fieldlist_parm_eq_vector_train_global_lst_i_j_k[2],:,:]
                         train_a_global_2_logRMS_RegressionModel[i_ntrain,item_of_sum_vector_train_a_elements_i,(intermediate_i_file_no-(n_beg))] = data_read_global_eachTimeStep_std_logRMS[ startofpatternlist_i_file_no_in_SelectData[(i_ntrain)]+intermediate_i_file_no,fieldlist_parm_eq_vector_train_global_lst_i_j_0,fieldlist_parm_eq_vector_train_global_lst_i_j_k[1],fieldlist_parm_eq_vector_train_global_lst_i_j_k[2]]
-                        if IncludeSteadyState:
+                        if if_IncludeSteadyState:
                             for T_in_steadystate_iteration in range(T_in_steadystate):
                                 train_a_global_steadystate [i_ntrain,item_of_sum_vector_train_a_elements_i,:,:,T_in_steadystate_iteration]                = data_read_global[ startofpatternlist_i_file_no_in_SelectData[(i_ntrain) ]+T_in_steadystate_iteration,fieldlist_parm_eq_vector_train_global_lst_i_j_0,1,fieldlist_parm_eq_vector_train_global_lst_i_j_k[2],:,:]
     if torch.any(torch.isnan(train_a_global[:,:,:,:])): #data_dump[:,:,:,:])):
@@ -171,7 +171,7 @@ def initializationTrainTestParametersFile(
                         exit(1)
                     test_a_global [i_ntest ,item_of_sum_vector_test_a_elements_i,:,:,(intermediate_i_file_no)//1] = data_read_global[ startofpatternlist_i_file_no_in_SelectData[i_ntest + ntrain]     +intermediate_i_file_no,fieldlist_parm_eq_vector_train_global_lst_i_j_0,fieldlist_parm_eq_vector_train_global_lst_i_j_k[1],fieldlist_parm_eq_vector_train_global_lst_i_j_k[2],:,:]
                     test_a_global_2_logRMS_RegressionModel [i_ntest ,item_of_sum_vector_test_a_elements_i,(intermediate_i_file_no)//1] = data_read_global_eachTimeStep_std_logRMS[ startofpatternlist_i_file_no_in_SelectData[i_ntest + ntrain]     +intermediate_i_file_no,fieldlist_parm_eq_vector_train_global_lst_i_j_0,fieldlist_parm_eq_vector_train_global_lst_i_j_k[1],fieldlist_parm_eq_vector_train_global_lst_i_j_k[2]]
-                    if IncludeSteadyState:
+                    if if_IncludeSteadyState:
                         for T_in_steadystate_iteration in range(T_in_steadystate):
                             test_a_global_steadystate [ i_ntest,item_of_sum_vector_test_a_elements_i,:,:,T_in_steadystate_iteration] = data_read_global[ startofpatternlist_i_file_no_in_SelectData[i_ntest + ntrain]+T_in_steadystate_iteration,fieldlist_parm_eq_vector_train_global_lst_i_j_0,1,fieldlist_parm_eq_vector_train_global_lst_i_j_k[2],:,:]
     if torch.any(torch.isnan(test_a_global[:,:,:,:])): #data_dump[:,:,:,:])):
@@ -205,7 +205,7 @@ def initializationTrainTestParametersFile(
                     test_u_global_2_logRMS_RegressionModel [i_ntest,item_of_sum_vector_test_u_elements_i,(intermediate_i_file_no-(n_beg+(T_in*1)))//1] = data_read_global_eachTimeStep_std_logRMS[startofpatternlist_i_file_no_in_SelectData[(i_ntest)+ntrain]+intermediate_i_file_no,fieldlist_parm_eq_vector_train_global_lst_i_j_0,fieldlist_parm_eq_vector_train_global_lst_i_j_k[1],fieldlist_parm_eq_vector_train_global_lst_i_j_k[2]]
     if torch.any(torch.isnan(train_u_global[:,:,:,:])): #data_dump[:,:,:,:])):
         exit(1)
-    if IncludeSteadyState:
+    if if_IncludeSteadyState:
         train_a = torch.zeros(ntrain,S_r,S_theta,(T_in+T_in_steadystate ) *( sum_vector_a_elements_i_iter ) )
         train_u = torch.zeros(ntrain,S_r,S_theta,T_out   *( sum_vector_u_elements_i_iter ) )
         test_a  = torch.zeros(ntest ,S_r,S_theta,(T_in+T_in_steadystate) *( sum_vector_a_elements_i_iter ) )
@@ -215,7 +215,7 @@ def initializationTrainTestParametersFile(
         train_u = torch.zeros(ntrain,S_r,S_theta,T_out   *( sum_vector_u_elements_i_iter ) )
         test_a  = torch.zeros(ntest ,S_r,S_theta,T_in*( sum_vector_a_elements_i_iter ) )
         test_u  = torch.zeros(ntest ,S_r,S_theta,T_out   *( sum_vector_u_elements_i_iter ) )
-    if IncludeSteadyState:
+    if if_IncludeSteadyState:
         train_a_2_logRMS_RegressionModel = torch.zeros(ntrain,(T_in+T_in_steadystate ) *( sum_vector_a_elements_i_iter ) )
         train_u_2_logRMS_RegressionModel = torch.zeros(ntrain,T_out   *( sum_vector_u_elements_i_iter ) )
         test_a_2_logRMS_RegressionModel  = torch.zeros(ntest ,(T_in+T_in_steadystate) *( sum_vector_a_elements_i_iter ) )
@@ -230,7 +230,7 @@ def initializationTrainTestParametersFile(
         train_a_2_logRMS_RegressionModel[:,(T_in*item_of_sum_vector_a_elements_i_iter):(T_in*(item_of_sum_vector_a_elements_i_iter+1))] = train_a_global_2_logRMS_RegressionModel[:,item_of_sum_vector_a_elements_i_iter,:]
         test_a [:,:,:,(T_in*item_of_sum_vector_a_elements_i_iter):(T_in*(item_of_sum_vector_a_elements_i_iter+1))] = test_a_global [:,item_of_sum_vector_a_elements_i_iter,:,:,:]
         test_a_2_logRMS_RegressionModel [:,(T_in*item_of_sum_vector_a_elements_i_iter):(T_in*(item_of_sum_vector_a_elements_i_iter+1))] = test_a_global_2_logRMS_RegressionModel [:,item_of_sum_vector_a_elements_i_iter,:]
-    if IncludeSteadyState:
+    if if_IncludeSteadyState:
         for item_of_sum_vector_a_elements_i_iter in range(sum_vector_a_elements_i_iter): 
             train_a[:,:,:,((T_in+T_in_steadystate )*item_of_sum_vector_a_elements_i_iter):(((T_in+T_in_steadystate)*(item_of_sum_vector_a_elements_i_iter))+T_in-0)] = train_a_global[:,item_of_sum_vector_a_elements_i_iter,:,:,:]
             train_a[:,:,:,(((T_in+T_in_steadystate)*(item_of_sum_vector_a_elements_i_iter))+T_in-0):(((T_in+T_in_steadystate)*(item_of_sum_vector_a_elements_i_iter))+T_in+T_in_steadystate-0)] = train_a_global_steadystate[:,item_of_sum_vector_a_elements_i_iter,:,:,:]
@@ -243,7 +243,7 @@ def initializationTrainTestParametersFile(
         test_u_2_logRMS_RegressionModel [:,(T_out   *item_of_sum_vector_u_elements_i_iter):(T_out   *(item_of_sum_vector_u_elements_i_iter+1))] = test_u_global_2_logRMS_RegressionModel [:,item_of_sum_vector_u_elements_i_iter,:] # .unsqueeze(dim=-1)
     assert (S_r == train_u.shape[-3])
     assert (S_theta == train_u.shape[-2])
-    if IncludeSteadyState:
+    if if_IncludeSteadyState:
         assert ((T_in+T_in_steadystate ) * sum_vector_a_elements_i_iter == train_a.shape[-1])
         assert ((T_in+T_in_steadystate) * sum_vector_a_elements_i_iter == test_a.shape[-1] )
     else:
@@ -259,7 +259,7 @@ def initializationTrainTestParametersFile(
     assert (T_out * sum_vector_u_elements_i_iter == train_u_2_logRMS_RegressionModel.shape[-1])
     assert (S_theta == test_a.shape[-2])
     assert (S_r == test_a.shape[-3])                
-    if IncludeSteadyState:
+    if if_IncludeSteadyState:
         train_a = train_a.reshape(ntrain,S_r,S_theta,(T_in+T_in_steadystate)*sum_vector_a_elements_i_iter)
         test_a  =  test_a.reshape( ntest,S_r,S_theta,(T_in+T_in_steadystate)*sum_vector_a_elements_i_iter)
     else:
@@ -272,13 +272,13 @@ def initializationTrainTestParametersFile(
     train_loader_2_logRMS_RegressionModel = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(train_a_2_logRMS_RegressionModel , train_u_2_logRMS_RegressionModel ), batch_size=batch_size, shuffle=False )
     test_loader_2_logRMS_RegressionModel  = torch.utils.data.DataLoader(torch.utils.data.TensorDataset( test_a_2_logRMS_RegressionModel ,  test_u_2_logRMS_RegressionModel ), batch_size=batch_size, shuffle=False )
     print('Done initializing the training and testing data')
-    if IncludeSteadyState:
-        if model_Nimrod_FNO2d_global:
+    if if_IncludeSteadyState:
+        if if_model_Nimrod_STFNO_global:
             model = FNO2d_global            (modes, modes, width,(T_in+T_in_steadystate),sum_vector_a_elements_i_iter,T_out_sub_time_consecutiveIterator_factor,sum_vector_u_elements_i_iter,number_of_layers).cuda()
         else:
             model = FNO2d_glob_orig         (modes, modes, width,(T_in+T_in_steadystate),sum_vector_a_elements_i_iter).cuda()
     else:
-        if model_Nimrod_FNO2d_global:
+        if if_model_Nimrod_STFNO_global:
             total_vector_a_elements_i = 7
             total_vector_u_elements_i = 7
             model = FNO2d_global  (modes, modes, width,
@@ -432,9 +432,9 @@ def initializationTrainTestParametersFile(
         epochs_ofWeigthModification,
         epochs_ofWeigthModificationFactor,                        
         T_out_sub_time_consecutiveIterator_factor,
-        IncludeSteadyState, 
+        if_IncludeSteadyState, 
         n_beg, startofpatternlist_i_file_no_in_SelectData,
-        model_Nimrod_FNO2d_global  ,
+        if_model_Nimrod_STFNO_global  ,
         i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j ,
         ii_sub_fieldlist_parm_eq_vector_train_global_lst_i,
         modes, width,

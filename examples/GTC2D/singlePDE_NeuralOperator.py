@@ -25,9 +25,9 @@ def singlePDENeuralOperator(data_read_global,
         data_read_global_eachTimeStep_std,
         ntrain,ntest,
         S_r,S_theta , T_in,T_out, T_in_steadystate,
-        IncludeSteadyState, 
+        if_IncludeSteadyState, 
         startofpatternlist_i_file_no_in_SelectData,
-        model_Nimrod_FNO2d_global,
+        if_model_Nimrod_STFNO_global,
         i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j,
         sum_vector_a_elements_i_iter, sum_vector_u_elements_i_iter,
         epochs,
@@ -46,7 +46,7 @@ def singlePDENeuralOperator(data_read_global,
         train_loader,test_loader,
         optimizer,scheduler,
         count_params_model,
-        intermediate_parameter_update,
+        if_intermediate_parameter_update,
         model_save_path,
         model_2_logRMS_RegressionModel,
         model_2_logRMS_RegressionModel_save_path,
@@ -140,13 +140,13 @@ def singlePDENeuralOperator(data_read_global,
         myloss_MaxNormRel = LpLoss_L1NormRel_fieldElements(size_average=True)
         for ep in range(epochs):
             if ep % epochs_ofWeigthModificationFactor == 0 : #An optional condition not being utilized now. If used, will randomly modify the weights of the model. 
-                if IncludeSteadyState:
-                    if model_Nimrod_FNO2d_global:
+                if if_IncludeSteadyState:
+                    if if_model_Nimrod_STFNO_global:
                         pass
                     else:
                         pass
                 else:
-                    if model_Nimrod_FNO2d_global:
+                    if if_model_Nimrod_STFNO_global:
                         for model_conv_linears_layer_idx, model_conv_linears_layer in enumerate(model.conv_linears):
                             for model_SpectralConv2d_idx, model_SpectralConv2d in enumerate(model_conv_linears_layer):
                                 torch.manual_seed( manual_seed_value_set + (number_of_layers * 100000) + 10000 + ep)
@@ -268,7 +268,7 @@ def singlePDENeuralOperator(data_read_global,
         str_file1= ( '\n\n\n\n\n\n\n\n' )
         file1.write(str_file1)
         file1.close()
-        if intermediate_parameter_update:
+        if if_intermediate_parameter_update:
             pass # Not considering this way of modifying the model
         torch.save(model_2_logRMS_RegressionModel.state_dict(), model_2_logRMS_RegressionModel_save_path)
         torch.save(model.state_dict(), model_save_path)
@@ -322,7 +322,7 @@ def singlePDENeuralOperator(data_read_global,
     print('Measuring the inference time of test data and writing at ',strn_epochs_dump_path_file5)
     inferenceTimeTestData_file5(
     S_r,S_theta , T_in,T_out, T_in_steadystate,
-    IncludeSteadyState, 
+    if_IncludeSteadyState, 
     sum_vector_a_elements_i_iter, sum_vector_u_elements_i_iter,
     epochs,
     strn_epochs_dump_path_file5,

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from stfno.fourier_transform_2d_layer import SpectralConv2d
 from stfno.fourier_transform_2d_layer_jit_torchCompile import SpectralConv2d_jit_torchCompile
-from stfno.channelwise_conv1d_mlp import MLP
+from stfno.channelwise_conv_mlp import MLP
 import numpy as np
 import torch.nn.functional as F
 

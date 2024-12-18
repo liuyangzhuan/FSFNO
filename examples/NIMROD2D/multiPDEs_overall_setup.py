@@ -27,9 +27,9 @@ def multiPDEs_overallsetup(
             S,S_r,S_theta,
             r_theta_phi, 
             T_in,T_out, T_in_steadystate,
-            IncludeSteadyState, 
+            if_IncludeSteadyState, 
             n_beg, startofpatternlist_i_file_no_in_SelectData,
-            model_Nimrod_FNO2d_global  ,
+            if_model_Nimrod_STFNO_global  ,
             epochs,
             T_out_sub_time_consecutiveIterator_factor, step,
             batch_size,number_of_layers,learning_rate,iterations,
@@ -47,26 +47,26 @@ def multiPDEs_overallsetup(
             epsilon_inPlottingErrorNormalization,
             input_parameter_order, 
             mWidth_input_parameters, 
-            nWidth_output_parameters
+            nWidth_output_parameters,
+            if_intermediate_parameter_update
             ):
 
     train_a_range = range(n_beg,n_beg+(T_in*1),1)
     train_u_range = range(n_beg+(T_in*1),n_beg+((T_out+T_in)*1),1)
     test_a_range = range(n_beg,n_beg+(T_in*1),1)
     test_u_range = range(n_beg+(T_in*1),n_beg+((T_out+T_in)*1),1)
-    intermediate_parameter_update = False
     for i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i in enumerate(fieldlist_parm_eq_vector_train_global_lst): 
-        print('Now going to initialize the training and testing data')
         for ii_sub_fieldlist_parm_eq_vector_train_global_lst_i, sub_fieldlist_parm_eq_vector_train_global_lst_i_ii in enumerate(fieldlist_parm_eq_vector_train_global_lst_i):
                 for j_fieldlist_parm_eq_vector_train_global_lst_i, fieldlist_parm_eq_vector_train_global_lst_i_j in enumerate(sub_fieldlist_parm_eq_vector_train_global_lst_i_ii):
+                    print('Now going to initialize the training and testing data')
                     (sub_fieldlist_parm_eq_vector_train_global_lst_i_ii, j_fieldlist_parm_eq_vector_train_global_lst_i,
                     data_read_global,
                     train_a_range,train_u_range,test_a_range,test_u_range,
                     ntrain,ntest,
                     S,S_r,S_theta , T_in,T_out, T_in_steadystate,
-                    IncludeSteadyState, 
+                    if_IncludeSteadyState, 
                     n_beg, startofpatternlist_i_file_no_in_SelectData,
-                    model_Nimrod_FNO2d_global,
+                    if_model_Nimrod_STFNO_global,
                     if_model_jit_torchCompile,
                     i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j ,
                     ii_sub_fieldlist_parm_eq_vector_train_global_lst_i,
@@ -88,9 +88,9 @@ def multiPDEs_overallsetup(
                         train_a_range,train_u_range,test_a_range,test_u_range,
                         ntrain,ntest,
                         S,S_r,S_theta , T_in,T_out, T_in_steadystate,
-                        IncludeSteadyState, 
+                        if_IncludeSteadyState, 
                         n_beg, startofpatternlist_i_file_no_in_SelectData,
-                        model_Nimrod_FNO2d_global,
+                        if_model_Nimrod_STFNO_global,
                         if_model_jit_torchCompile, 
                         i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j ,
                         ii_sub_fieldlist_parm_eq_vector_train_global_lst_i,
@@ -119,7 +119,7 @@ def multiPDEs_overallsetup(
                         S,S_r,S_theta,
                         r_theta_phi, 
                         T_in,T_out, T_in_steadystate,
-                        IncludeSteadyState, 
+                        if_IncludeSteadyState, 
                         startofpatternlist_i_file_no_in_SelectData,
                         i_fieldlist_parm_eq_vector_train_global_lst, fieldlist_parm_eq_vector_train_global_lst_i_j,
                         sum_vector_a_elements_i_iter, sum_vector_u_elements_i_iter,
@@ -133,7 +133,7 @@ def multiPDEs_overallsetup(
                         strn_epochs_dump_path_file3,
                         strn_epochs_dump_path_file2,
                         strn_epochs_dump_path_file1,
-                        # model_Nimrod_FNO2d_global,
+                        # if_model_Nimrod_STFNO_global,
                         if_model_parameters_load,
                         if_model_jit_torchCompile,
                         if_postTraingAndTesting_ContourPlotsOfTestingData,
@@ -146,7 +146,7 @@ def multiPDEs_overallsetup(
                         train_loader,test_loader,
                         optimizer,scheduler,
                         count_params_model,
-                        intermediate_parameter_update,
+                        if_intermediate_parameter_update,
                         model_save_path
                         )
                     
