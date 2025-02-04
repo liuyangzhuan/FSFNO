@@ -1,5 +1,17 @@
 # STFNO
-STFNO Copyright (c) 2024, The Regents of the University of California, through Lawrence Berkeley National Laboratory (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved.
+Sparsified Time-dependent PDEs FNO (STFNO) Copyright (c) 2025, The Regents of the University of California, through Lawrence Berkeley National Laboratory (subject to receipt of any required approvals from the U.S. Dept. of Energy). All rights reserved.
+
+If you have questions about your rights to use or distribute this software,
+please contact Berkeley Lab's Intellectual Property Office at
+IPO@lbl.gov.
+
+NOTICE.  This Software was developed under funding from the U.S. Department
+of Energy and the U.S. Government consequently retains certain rights.  As
+such, the U.S. Government has been granted for itself and others acting on
+its behalf a paid-up, nonexclusive, irrevocable, worldwide license in the
+Software to reproduce, distribute copies to the public, prepare derivative 
+works, and perform publicly and display publicly, and to permit others to do so.
+
 
 ## Overview
 STFNO (Sparsified Time-dependent PDEs FNO code) is an extension of the popular Fourier Neural Operator (FNO) architecture to the solution of coupled systems of time-dependent partial differential equations. STFNO leverages the sparsified dependencies on the field quantities based on the semi-discretiezed form of the PDEs, enabling significant reduction in the number of model parameters. STFNO has been extensively tested on two fusion simulation codes, NIMROD and GTC, and can be easily tailored to other systems of PDEs. STFNO is a fully Python code and depends on pytorch and numpy.  
