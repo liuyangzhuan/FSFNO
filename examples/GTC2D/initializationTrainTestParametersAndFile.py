@@ -1,8 +1,8 @@
 
-# STFNO Copyright (c) 2024, The Regents of the University of California,
-# through Lawrence Berkeley National Laboratory (subject to receipt of any
-# required approvals from the U.S.Dept. of Energy) and the University of
-# California, Berkeley.  All rights reserved.
+# Sparsified Time-dependent PDEs FNO (STFNO) Copyright (c) 2025, The Regents of 
+# the University of California, through Lawrence Berkeley National Laboratory 
+# (subject to receipt of any required approvals from the U.S.Dept. of Energy).  
+# All rights reserved.
 #
 # If you have questions about your rights to use or distribute this software,
 # please contact Berkeley Lab's Intellectual Property Office at IPO@lbl.gov.
